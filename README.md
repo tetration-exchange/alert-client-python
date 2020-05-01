@@ -45,5 +45,4 @@ Live Analysis Annotated Flows contains escaped for Live Analysis Application Sec
 
 
 ## License
-
-Please refer to the file *LICENSE.pdf* in same directory of this README file.
+This code is provided as-is with an Apache 2.0 license
