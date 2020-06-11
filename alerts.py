@@ -37,7 +37,8 @@ class TetrationAlertHandler():
         print('Waiting for alerts...')
         for message in self.kafka_client:
             details = json.loads(message.value)
-            print(Fore.GREEN + Style.BRIGHT + details["alert_text_with_names"] + Fore.RESET + Style.DIM)
+            text = details.get("alert_text_with_names", details.get("alert_text", "No provided alert text"))
+            print(Fore.GREEN + Style.BRIGHT + text + Fore.RESET + Style.DIM)
             pprint(details["alert_details_json"])
             print(Style.RESET_ALL)
 
