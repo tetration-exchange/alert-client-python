@@ -10,7 +10,6 @@ class TetrationAlertHandler():
     Class responsible for refreshing collecting alerts from the Kafka stream
     coming from Tetration Analytics
     """
-
     def __init__(self):
         # Load Kafka topic configuration for tenant
         self.ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
@@ -24,8 +23,9 @@ class TetrationAlertHandler():
 
         print('Loading certificates...')
         # Connect to the Kafka topic
-        self.ssl_context.load_cert_chain('credentials/kafkaConsumerCA.cert',
-                                         'credentials/kafkaConsumerPrivateKey.key')
+        self.ssl_context.load_cert_chain(
+            'credentials/kafkaConsumerCA.cert',
+            'credentials/kafkaConsumerPrivateKey.key')
         print('Starting Kafka client...')
         self.kafka_client = KafkaConsumer(bootstrap_servers=brokers,
                                           security_protocol='SSL',
@@ -37,9 +37,18 @@ class TetrationAlertHandler():
         print('Waiting for alerts...')
         for message in self.kafka_client:
             details = json.loads(message.value)
-            text = details.get("alert_text_with_names", details.get("alert_text", "No provided alert text"))
+            text = details.get(
+                "alert_text_with_names",
+                details.get("alert_text", "No provided alert text"))
             print(Fore.GREEN + Style.BRIGHT + text + Fore.RESET + Style.DIM)
-            pprint(details["alert_details_json"])
+            try:
+                pprint(details["alert_details_json"])
+            except KeyError:
+                print(
+                    Fore.RED +
+                    "Warning - could not find alert details. Dumping whole alert"
+                )
+                pprint(details)
             print(Style.RESET_ALL)
 
 
