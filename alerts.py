@@ -47,7 +47,7 @@ class TetrationAlertHandler():
                 print(
                     Fore.RED +
                     "Warning - could not find alert details. Dumping whole alert"
-                )
+                    + Fore.RESET)
                 pprint(details)
             print(Style.RESET_ALL)
 
