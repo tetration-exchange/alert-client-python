@@ -1,5 +1,6 @@
 import json
 import ssl
+import time
 from pprint import pprint
 from colorama import init, Fore, Style
 from kafka import KafkaConsumer
@@ -23,9 +24,7 @@ class TetrationAlertHandler():
 
         print('Loading certificates...')
         # Connect to the Kafka topic
-        self.ssl_context.load_cert_chain(
-            'credentials/kafkaConsumerCA.cert',
-            'credentials/kafkaConsumerPrivateKey.key')
+        self.ssl_context.load_cert_chain('credentials/kafkaConsumerCA.cert', 'credentials/kafkaConsumerPrivateKey.key')
         print('Starting Kafka client...')
         self.kafka_client = KafkaConsumer(bootstrap_servers=brokers,
                                           security_protocol='SSL',
@@ -33,23 +32,39 @@ class TetrationAlertHandler():
         print('Subscribing to', topic)
         self.kafka_client.subscribe(topic)
 
+    def print_alert_time(self, details):
+        try:
+            alert_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(details["alert_time"] / 1000))
+        except KeyError:
+            alert_time = "No time given"
+        print(Fore.WHITE + Style.BRIGHT + alert_time)
+
+    def print_alert_header(self, details):
+        text = details.get("alert_text_with_names", details.get("alert_text", "No provided alert text"))
+        print(Fore.GREEN + Style.BRIGHT + text + Fore.RESET + Style.DIM)
+
+    def print_alert_detail(self, details):
+        try:
+            pprint(details["alert_details_json"], compact=True, width=160)
+        except KeyError:
+            try:
+                alert_details = json.loads(details["alert_details"])
+                pprint(alert_details)
+            except (KeyError, json.JSONDecodeError):
+                print(Fore.RED + "Warning - could not find alert details. Dumping whole alert" + Fore.RESET)
+                pprint(details)
+        print(Style.RESET_ALL)
+
+    def print_alert(self, details):
+        self.print_alert_time(details)
+        self.print_alert_header(details)
+        self.print_alert_detail(details)
+
     def get_alerts(self):
         print('Waiting for alerts...')
         for message in self.kafka_client:
             details = json.loads(message.value)
-            text = details.get(
-                "alert_text_with_names",
-                details.get("alert_text", "No provided alert text"))
-            print(Fore.GREEN + Style.BRIGHT + text + Fore.RESET + Style.DIM)
-            try:
-                pprint(details["alert_details_json"])
-            except KeyError:
-                print(
-                    Fore.RED +
-                    "Warning - could not find alert details. Dumping whole alert"
-                    + Fore.RESET)
-                pprint(details)
-            print(Style.RESET_ALL)
+            self.print_alert(details)
 
 
 if __name__ == '__main__':
