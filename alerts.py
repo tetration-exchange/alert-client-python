@@ -1,6 +1,7 @@
 import json
 import ssl
 import time
+import yaml
 from pprint import pprint
 from colorama import init, Fore, Style
 from kafka import KafkaConsumer
@@ -45,11 +46,11 @@ class TetrationAlertHandler():
 
     def print_alert_detail(self, details):
         try:
-            pprint(details["alert_details_json"], compact=True, width=160)
+            print(yaml.dump(details["alert_details_json"], allow_unicode=True))
         except KeyError:
             try:
                 alert_details = json.loads(details["alert_details"])
-                pprint(alert_details, compact=True, width=160)
+                print(yaml.dump(alert_details, allow_unicode=True))
             except (KeyError, json.JSONDecodeError):
                 print(Fore.RED + "Warning - could not find alert details. Dumping whole alert" + Fore.RESET)
                 pprint(details)
@@ -70,4 +71,7 @@ class TetrationAlertHandler():
 if __name__ == '__main__':
     init()
     msg_handler = TetrationAlertHandler()
-    msg_handler.get_alerts()
+    try:
+        msg_handler.get_alerts()
+    except KeyboardInterrupt:
+        print("\nExiting alerts stream...")
