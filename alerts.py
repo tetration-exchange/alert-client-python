@@ -49,7 +49,7 @@ class TetrationAlertHandler():
         except KeyError:
             try:
                 alert_details = json.loads(details["alert_details"])
-                pprint(alert_details)
+                pprint(alert_details, compact=True, width=160)
             except (KeyError, json.JSONDecodeError):
                 print(Fore.RED + "Warning - could not find alert details. Dumping whole alert" + Fore.RESET)
                 pprint(details)
