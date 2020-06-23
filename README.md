@@ -23,22 +23,48 @@ python alerts.py
 
 #### Example alert
 ```
-2020-06-16 13:13:08
-Live Analysis Annotated Flows contains escaped for Live Analysis Application Secure X Global Web Servers
-{'application_id': '5eab2e2d755f020c304bd929',
- 'consumer_scope_ids': ['5e56fc6f755f0229d4a64acf', '5eab2dfd755f020c304bd926'],
- 'consumer_scope_names': ['SBGSECUREXPOV', 'SBGSECUREXPOV:Internet 🌎'],
- 'escaped_count': 1,
- 'internal_trigger': {'datasource': 'live_analysis_compliance',
-                      'label': 'Alert Trigger',
-                      'rules': {'field': 'policy_violations', 'type': 'contains', 'value': 'escaped'}},
- 'policy_category': ['ESCAPED'],
- 'policy_type': 'LIVE_POLICY',
- 'protocol': 'TCP',
- 'provider_port': 3495,
- 'provider_scope_ids': ['5e56fc6f755f0229d4a64acf', '5eab2dcd755f020c304bd922'],
- 'provider_scope_names': ['SBGSECUREXPOV', 'SBGSECUREXPOV:SecureX Test Machines'],
- 'time_range': [1592337900000, 1592337959999]}
+2020-06-23 15:32:47
+Live Analysis Rejected Flows > 0 for Live Analysis Application Secure X Global Web Servers
+application_id: 5eab2e2d755f020c304bd929
+constituent_flows:
+- consumer_address: 172.31.37.92
+  consumer_port: 49850
+  protocol: TCP
+  provider_address: 146.112.63.6
+  provider_port: 443
+- consumer_address: 172.31.32.159
+  consumer_port: 64779
+  protocol: TCP
+  provider_address: 146.112.63.13
+  provider_port: 443
+consumer_scope_ids:
+- 5e56fc6f755f0229d4a64acf
+- 5eab2dcd755f020c304bd922
+consumer_scope_names:
+- SBGSECUREXPOV
+- SBGSECUREXPOV:SecureX Test Machines
+internal_trigger:
+  datasource: live_analysis_compliance
+  label: Alert Trigger
+  rules:
+    field: rejected_count
+    type: gt
+    value: 0
+policy_category:
+- REJECTED
+policy_type: LIVE_POLICY
+protocol: TCP
+provider_port: 443
+provider_scope_ids:
+- 5e56fc6f755f0229d4a64acf
+- 5eab2dfd755f020c304bd926
+provider_scope_names:
+- SBGSECUREXPOV
+- SBGSECUREXPOV:Internet 🌎
+rejected_count: 2
+time_range:
+- 1592951220000
+- 1592951279999
  ```
 
 ## In Action
